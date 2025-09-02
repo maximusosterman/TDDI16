@@ -16,10 +16,8 @@ void handle_data(std::string const& line)
     for (auto c : s)
     {
         it = std::find(it, t.end(), c);
-        if (it == t.end())
-        {
-            result = false;
-        }
+        if (it == t.end()) result = false;
+        it++;
     }
 
     if (result)
@@ -40,8 +38,6 @@ int main()
     {
         lines.push_back(line);
     }
-
-    std::cout << std::endl;
 
     for (auto& line : lines)
     {
