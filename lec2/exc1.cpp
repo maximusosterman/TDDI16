@@ -1,8 +1,14 @@
 #include <string>
 #include <iostream>
+#include <vector>
 
 void handle_data(std::string& data)
 {
+    if (std::stoi(data) == 0)
+    {
+        return;
+    }
+
     int result {};
 
     while(data.size() > 1 && data.size() != 0)
@@ -15,10 +21,7 @@ void handle_data(std::string& data)
         }
         data = std::to_string(result);
     }
-    if (result != 0)
-    {
-        std::cout << std::to_string(result) << std::endl;
-    }
+    std::cout << std::flush << data << std::endl;
 }
 
 int main()
