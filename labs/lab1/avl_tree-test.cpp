@@ -24,8 +24,22 @@ using namespace std;
 int main() {
     AVL_Tree<int>  avl_tree;
 
-    for (int i = 1; i <= 11; i++)
-        avl_tree.insert(i);
+    // for (int i = 1; i <= ; i++)
+    //     avl_tree.insert(i);
+
+    avl_tree.insert(9);
+    avl_tree.insert(4);
+    avl_tree.insert(11);
+    avl_tree.insert(2);
+    avl_tree.insert(6);
+    avl_tree.insert(10);
+    avl_tree.insert(12);
+    avl_tree.insert(1);
+    avl_tree.insert(3);
+    avl_tree.insert(5);
+    avl_tree.insert(7);
+    avl_tree.insert(13);
+    avl_tree.insert(8);
 
     try {
         cout << "AVL-träd efter insättning av 1, 2,..., 11:\n\n";

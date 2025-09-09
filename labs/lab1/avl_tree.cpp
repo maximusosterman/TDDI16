@@ -37,7 +37,6 @@ private:
     static void insert(const Comparable&, Node_Pointer&);
     static void remove(const Comparable &x, Node_Pointer &t);
 
-
     static void clear(Node_Pointer&);
 
     static Node_Pointer find(const Comparable&, const Node_Pointer);
