@@ -35,6 +35,8 @@ private:
 
     // The following functions are called from corresponding functions in AVL_Tree
     static void insert(const Comparable&, Node_Pointer&);
+    static void remove(const Comparable &x, Node_Pointer &t);
+
 
     static void clear(Node_Pointer&);
 
@@ -176,6 +178,40 @@ void AVL_Tree_Node<Comparable>::insert(const Comparable &x, Node_Pointer &t) {
             calculate_height(t);
     } else {
         throw AVL_Tree_error("insättning: finns redan");
+    }
+}
+
+template <typename Comparable>
+void AVL_Tree_Node<Comparable>::remove(const Comparable &x, Node_Pointer &t) {
+    
+    if (t == nullptr) {
+        return;  // Här kan ett undantag genereras i stället ...
+    }
+
+    if (x < t->element) {
+        remove(x, t->left);
+    } else if (t->element < x) {
+        remove(x, t->right);
+    } else {
+        // Sökt värde finns i noden t
+        Node_Pointer  tmp;
+
+        if (t->left != nullptr && t->right != nullptr) {
+            // Noden har två barn och ersätts med inorder efterföljare
+            tmp = find_min(t->right);
+            t->element = tmp->element;
+            remove(t->element, t->right);
+        } else {
+            // Noden har inget eller ett barn
+            tmp = t;
+
+            if (t->left == nullptr)
+                t = t->right;
+            else
+                t = t->left;
+
+            delete tmp;
+        }
     }
 }
 
@@ -373,10 +409,12 @@ void AVL_Tree<Comparable>::remove(const Comparable &x) {
 
     if (!member(x))
     {
+        
         throw AVL_Tree_error("Is not member of tree!");
     }
-
-    //throw AVL_Tree_error("remove: har hittats och pågår konstruktion");
+    
+    Node::remove(x, root);
+    
 }
 
 /**
