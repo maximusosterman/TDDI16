@@ -370,7 +370,13 @@ void AVL_Tree<Comparable>::insert(const Comparable &x) {
  */
 template <typename Comparable>
 void AVL_Tree<Comparable>::remove(const Comparable &x) {
-    throw AVL_Tree_error("remove: ska implementeras!");
+
+    if (!member(x))
+    {
+        throw AVL_Tree_error("Is not member of tree!");
+    }
+
+    //throw AVL_Tree_error("remove: har hittats och pågår konstruktion");
 }
 
 /**
