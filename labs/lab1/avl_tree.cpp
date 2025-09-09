@@ -185,13 +185,32 @@ template <typename Comparable>
 void AVL_Tree_Node<Comparable>::remove(const Comparable &x, Node_Pointer &t) {
     
     if (t == nullptr) {
-        return;  // Här kan ett undantag genereras i stället ...
+        throw AVL_Tree_error("Trädet är tomt");
     }
 
     if (x < t->element) {
         remove(x, t->left);
+        if (abs(node_height(t->left) - node_height(t->right)) == 2) {
+            std::cout << "In here 0" << std::endl;
+            if (t->left == nullptr)
+                single_rotate_with_right_child(t);                
+            else
+                double_rotate_with_right_child(t);
+        }
+        else
+            calculate_height(t);
     } else if (t->element < x) {
         remove(x, t->right);
+
+        if (abs(node_height(t->right) - node_height(t->left)) == 2)  {
+            std::cout << "In here 1" << std::endl;
+            if (t->right == nullptr)
+            single_rotate_with_left_child(t);
+            else
+            double_rotate_with_left_child(t);
+        }
+        else
+            calculate_height(t);
     } else {
         // Sökt värde finns i noden t
         Node_Pointer  tmp;
@@ -409,7 +428,6 @@ void AVL_Tree<Comparable>::remove(const Comparable &x) {
 
     if (!member(x))
     {
-        
         throw AVL_Tree_error("Is not member of tree!");
     }
     
