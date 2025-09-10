@@ -190,11 +190,10 @@ void AVL_Tree_Node<Comparable>::remove(const Comparable &x, Node_Pointer &t) {
     if (x < t->element) {
         remove(x, t->left);
         if (abs(node_height(t->left) - node_height(t->right)) == 2) {
-            std::cout << "In here 0" << std::endl;
-            if (t->left == nullptr)
-                single_rotate_with_right_child(t);                
+            if (node_height(t->left->left) >= node_height(t->left->right)) // Rotera det djupaste barnet
+                single_rotate_with_left_child(t);                
             else
-                double_rotate_with_right_child(t);
+                double_rotate_with_left_child(t);
         }
         else
             calculate_height(t);
@@ -202,11 +201,11 @@ void AVL_Tree_Node<Comparable>::remove(const Comparable &x, Node_Pointer &t) {
         remove(x, t->right);
 
         if (abs(node_height(t->right) - node_height(t->left)) == 2)  {
-            std::cout << "In here 1" << std::endl;
-            if (t->right == nullptr)
-            single_rotate_with_left_child(t);
+ 
+            if (node_height(t->right->right) >= node_height(t->right->left))
+                single_rotate_with_right_child(t);
             else
-            double_rotate_with_left_child(t);
+                double_rotate_with_right_child(t);
         }
         else
             calculate_height(t);
