@@ -182,33 +182,15 @@ void AVL_Tree_Node<Comparable>::insert(const Comparable &x, Node_Pointer &t) {
 
 template <typename Comparable>
 void AVL_Tree_Node<Comparable>::remove(const Comparable &x, Node_Pointer &t) {
-    
+
     if (t == nullptr) {
         throw AVL_Tree_error("Trädet är tomt");
     }
 
     if (x < t->element) {
         remove(x, t->left);
-        if (abs(node_height(t->left) - node_height(t->right)) == 2) {
-            if (node_height(t->left->left) >= node_height(t->left->right)) // Rotera det djupaste barnet
-                single_rotate_with_left_child(t);                
-            else
-                double_rotate_with_left_child(t);
-        }
-        else
-            calculate_height(t);
     } else if (t->element < x) {
         remove(x, t->right);
-
-        if (abs(node_height(t->right) - node_height(t->left)) == 2)  {
- 
-            if (node_height(t->right->right) >= node_height(t->right->left))
-                single_rotate_with_right_child(t);
-            else
-                double_rotate_with_right_child(t);
-        }
-        else
-            calculate_height(t);
     } else {
         // Sökt värde finns i noden t
         Node_Pointer  tmp;
@@ -230,6 +212,21 @@ void AVL_Tree_Node<Comparable>::remove(const Comparable &x, Node_Pointer &t) {
             delete tmp;
         }
     }
+
+    // Balansera trädet t
+    if (t == nullptr) {
+        return;
+    }
+
+    std::cout << "Current tree: " << t->element << std::endl;
+
+    // if(abs(node_height(t->left) - node_height(t->right)) == 2) {
+    //     single_rotate_with_left_child(t);
+    // }
+    //
+
+    // Calculate height
+    //calculate_height(t);}
 }
 
 /**
@@ -428,9 +425,9 @@ void AVL_Tree<Comparable>::remove(const Comparable &x) {
     {
         throw AVL_Tree_error("Is not member of tree!");
     }
-    
+
     Node::remove(x, root);
-    
+
 }
 
 /**
