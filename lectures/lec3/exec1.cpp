@@ -51,9 +51,7 @@ std::pair<std::vector<std::vector<std::string>>, std::map<std::string, int>> get
             }
         }
     }
-
     return {descriptions, hay_dict};
-
 }
 
 int main()
@@ -66,37 +64,18 @@ int main()
     auto [descriptions, hay_dict] = data;
     int points {};
 
-    std::cout << "\nINTRO: " << descriptions.size() << "\n";
-
     for (std::vector desc : descriptions)
     {
         points = 0;
         for (auto word : desc)
         {
-            std::cout << "WORD: [" << word << "]" << std::endl;
             auto it = hay_dict.find(word);
             if (it != hay_dict.end()) {
-                std::cout << it->first << " FOUND! - " << it->second << " CURRENT POINTS: " << points << std::endl;
                 points += it->second;
             }
         }
         std::cout << points << std::endl;
     }
-
-    // std::cout << "\nHay Dict: " << std::endl;
-    // for (auto x : hay_dict)
-    // {
-    //     std::cout << x.first << ": " << x.second << std::endl;
-    // }
-
-
-    // for (auto d : descriptions)
-    // {
-    //     std::cout << "\n" << d;
-    // }
-
-    // std::cout << "end" << std::endl;
-
 
     return 0;
 }
