@@ -2,12 +2,13 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <algorithm>
 
-std::pair<std::vector<std::string>, std::map<std::string, int>> get()
+std::pair<std::vector<std::vector<std::string>>, std::map<std::string, int>> get()
 {
 
     std::map <std::string, int> hay_dict {};
-    std::vector <std::string> descriptions {};
+    std::vector <std::vector <std::string>> descriptions {};
 
     int num_hp_words, num_descriptioms {};
     //Get params input
@@ -26,20 +27,29 @@ std::pair<std::vector<std::string>, std::map<std::string, int>> get()
     }
 
     // Get descriptions
-    std::string desctiption {};
+    std::vector<std::string> description {};
+    std::string word {};
 
     for (int i {}; i < num_descriptioms; i++)
     {
         char c {};
-        std::string buffer {};
 
         while (std::cin.get(c)) {
             if (c == '.') {
+                descriptions.push_back(description);
+                description.clear();
                 break;
             }
-            buffer.push_back(c);
+            else if (c == ' ' or c == '\n')
+            {
+                description.push_back(word);
+                word = "";
+            }
+            else
+            {
+                word.push_back(c);
+            }
         }
-        descriptions.push_back(buffer);
     }
 
     return {descriptions, hay_dict};
@@ -49,12 +59,29 @@ std::pair<std::vector<std::string>, std::map<std::string, int>> get()
 int main()
 {
     std::pair<
-     std::vector <std::string>,
+     std::vector<std::vector <std::string>>,
      std::map <std::string, int>
      > data {get()};
 
     auto [descriptions, hay_dict] = data;
+    int points {};
 
+    std::cout << "\nINTRO: " << descriptions.size() << "\n";
+
+    for (std::vector desc : descriptions)
+    {
+        points = 0;
+        for (auto word : desc)
+        {
+            std::cout << "WORD: [" << word << "]" << std::endl;
+            auto it = hay_dict.find(word);
+            if (it != hay_dict.end()) {
+                std::cout << it->first << " FOUND! - " << it->second << " CURRENT POINTS: " << points << std::endl;
+                points += it->second;
+            }
+        }
+        std::cout << points << std::endl;
+    }
 
     // std::cout << "\nHay Dict: " << std::endl;
     // for (auto x : hay_dict)
