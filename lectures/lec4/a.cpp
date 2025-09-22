@@ -12,7 +12,7 @@ std::vector<unsigned int> get()
         std::cin >> N;
         if (N == 0)
         {
-            return result;
+            return {};
         }
     }
     while (!(N <= 5000 && N >= 2));
@@ -35,7 +35,7 @@ unsigned int calc_cost(std::vector<unsigned int>& nums, unsigned int cost)
 
     if (cost == 0)
     {
-        new_cost = cost + nums[0] + nums[1];
+        new_cost = nums[0] + nums[1];
         nums.erase(nums.begin(), nums.begin() + 2);
     }
     else
@@ -49,8 +49,21 @@ unsigned int calc_cost(std::vector<unsigned int>& nums, unsigned int cost)
 
 int main()
 {
-    std::vector<unsigned int> nums = get();
-    std::cout << calc_cost(nums, 0) << std::endl;
+    std::vector<unsigned int> results {};
+    std::vector<unsigned int> nums {};
+
+    while (true)
+    {
+        nums = get();
+        if (nums.empty())
+            break;
+        results.push_back(calc_cost(nums, 0));
+    }
+
+    for (auto r : results)
+    {
+        std::cout << r << std::endl;
+    }
 
     return 0;
 }
