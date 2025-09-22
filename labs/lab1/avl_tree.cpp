@@ -218,15 +218,24 @@ void AVL_Tree_Node<Comparable>::remove(const Comparable &x, Node_Pointer &t) {
         return;
     }
 
-    std::cout << "Current tree: " << t->element << std::endl;
+    int balance = node_height(t->left) - node_height(t->right);
 
-    // if(abs(node_height(t->left) - node_height(t->right)) == 2) {
-    //     single_rotate_with_left_child(t);
-    // }
-    //
-
-    // Calculate height
-    //calculate_height(t);}
+    if (balance > 1){
+        int child_balance = node_height(t->left->left) - node_height(t->left->right);
+        if (child_balance >= 0) {
+            single_rotate_with_left_child(t);
+        } else {
+            double_rotate_with_left_child(t);
+        }
+    }else if(balance < -1)
+    {
+        int child_balance = node_height(t->right->right) - node_height(t->right->left);
+        if (child_balance >= 0) {
+            single_rotate_with_right_child(t);
+        } else {
+            double_rotate_with_right_child(t);
+        }
+    }
 }
 
 /**
