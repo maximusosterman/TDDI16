@@ -1,11 +1,18 @@
+#include <queue>
 #include <vector>
 #include <iostream>
 
-std::vector<unsigned int> get()
+using MinHeap = std::priority_queue<
+    unsigned long long,
+    std::vector<unsigned long long>,
+    std::greater<unsigned long long>
+>;
+
+MinHeap get()
 {
     int N {};
     unsigned int input {};
-    std::vector<unsigned int> result {};
+    MinHeap result {};
 
     do
     {
@@ -20,44 +27,38 @@ std::vector<unsigned int> get()
     for (int i {}; i < N; i++)
     {
         std::cin >> input;
-        result.push_back(input);
+        result.push(input);
     }
 
     return result;
 }
 
-unsigned int calc_cost(std::vector<unsigned int>& nums, unsigned int cost)
+unsigned long long calc_cost(MinHeap& nums)
 {
-    if (nums.empty()) return cost;
-    if (nums.size() == 1) return  cost + nums[0];
-
-    unsigned int new_cost {};
-
-    if (cost == 0)
+    unsigned long long total {};
+    while (nums.size() > 1)
     {
-        new_cost = nums[0] + nums[1];
-        nums.erase(nums.begin(), nums.begin() + 2);
-    }
-    else
-    {
-        new_cost = cost + nums[0];
-        nums.erase(nums.begin());
+        auto a = nums.top(); nums.pop();
+        auto b = nums.top(); nums.pop();
+        auto s = a + b;
+        total += s;
+        nums.push(s);
     }
 
-    return  new_cost + calc_cost(nums, new_cost);
+    return total;
 }
 
 int main()
 {
-    std::vector<unsigned int> results {};
-    std::vector<unsigned int> nums {};
+    std::vector<unsigned long long> results {};
 
     while (true)
     {
-        nums = get();
+        MinHeap nums {get()};
         if (nums.empty())
             break;
-        results.push_back(calc_cost(nums, 0));
+
+        results.push_back(calc_cost(nums));
     }
 
     for (auto r : results)
