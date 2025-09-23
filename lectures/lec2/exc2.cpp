@@ -4,18 +4,8 @@
 
 using namespace std;
 
-int main()
+unsigned int find_spaces(unsigned int N)
 {
-
-
-    unsigned int N {};
-
-    while (N <= 0 || N > 13)
-    {
-        cin >> N;
-    }
-    cin.ignore();
-
     vector<unsigned int> spaces_per_line {};
     char ch;
 
@@ -40,6 +30,24 @@ int main()
         result += line - least_spaces;
     }
 
-    cout << result << endl;
+    return result;
+}
+
+int main()
+{
+    vector<unsigned int> results;
+    unsigned int N {};
+
+    while (cin >> N && N != 0)
+    {
+        cin.ignore();
+        results.push_back(find_spaces(N));
+    }
+
+    for (auto reuslt : results)
+    {
+        cout << reuslt << endl;
+    }
+
     return 0;
 }
