@@ -46,11 +46,26 @@ public:
 Image_Summary compute_summary(const Image &image) {
     const size_t summary_size = 8;
     Image_Summary result;
+    
+    Image small_image = image.shrink(summary_size + 1,summary_size + 1);
+    
+    //Horisontellt
+    for(size_t y = 0 ; y < summary_size + 1; y++) {
+        for(size_t x = 0; x < summary_size ; x++){
+            double left = small_image.pixel(x,y).brightness();
+            double right = small_image.pixel(x+1,y).brightness();
+            result.horizontal.push_back(right > left);
+        }
+    }
 
-    // TODO: Finish the implementation.
-    // The lines below are here to avoid warnings. They can be removed.
-    (void)image;
-    (void)summary_size;
+    //Vertikalt
+    for(size_t y = 0 ; y < summary_size; y++) {
+        for(size_t x = 0; x < summary_size + 1 ; x++){
+            double up = small_image.pixel(x,y).brightness();
+            double down = small_image.pixel(x,y+1).brightness();
+            result.vertical.push_back(down > up);
+        }
+    }
 
     return result;
 }
@@ -74,12 +89,19 @@ int main(int argc, const char *argv[]) {
 
     auto begin = std::chrono::high_resolution_clock::now();
 
+    
     /**
      * TODO:
      * - For each file:
      *   - Load the file
      *   - Compute its summary
      */
+    vector<Image_Summary> summaries;
+    for (const auto &i : files){
+        Image img = load_image(i);
+        summaries.push_back(compute_summary(img));
+    }
+
 
 
     auto end = std::chrono::high_resolution_clock::now();
