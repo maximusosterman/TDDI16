@@ -32,6 +32,7 @@ using std::vector;
  * such, you will need to implement equality checks and a hash function for this
  * data structure.
  */
+
 class Image_Summary {
 public:
   // Horizontal increases in brightness.
@@ -47,7 +48,9 @@ Image_Summary compute_summary(const Image &image) {
   const size_t summary_size = 8;
   Image_Summary result;
   Image small_image = image.shrink(summary_size + 1, summary_size + 1);
-  // Horisontellt
+
+  // Code duplication need to be removed
+  //  Horisontellt
   for (size_t y = 0; y < summary_size + 1; y++) {
     for (size_t x = 0; x < summary_size; x++) {
       double left = small_image.pixel(x, y).brightness();
@@ -67,6 +70,28 @@ Image_Summary compute_summary(const Image &image) {
 
   return result;
 }
+
+bool operator==(const Image_Summary &lhs, const Image_Summary &rhs) {
+  return lhs.vertical == rhs.vertical && lhs.horizontal == rhs.horizontal;
+}
+
+namespace std {
+// Definiera en typ som specialiserar std::hash för vår typ:
+template <> class hash<Image_Summary> {
+public:
+  // Typen ska kunna användas som ett funktionsobjekt.
+  // Vi behöver därför överlagra funktionsanropsoperatorn (operator ()).
+  size_t operator()(const Image_Summary &to_hash) const {
+    size_t h1 = hash<vector<bool>>{}(to_hash.vertical);
+    size_t h2 = hash<vector<bool>>{}(to_hash.horizontal);
+    cout << "h1: " << h1 << endl;
+    cout << "h2: " << h2 << endl;
+    auto result = h1 ^ (h2 << 1);
+    cout << "Result: " << result << endl;
+    return result; // or use boost::hash_combine
+  }
+};
+} // namespace std
 
 int main(int argc, const char *argv[]) {
   WindowPtr window = Window::create(argc, argv);
@@ -89,23 +114,40 @@ int main(int argc, const char *argv[]) {
   auto begin = std::chrono::high_resolution_clock::now();
 
   /**
-   * TODO:
+   * TODO: DONE
    * - For each file:
    * - Load the file
    * - Compute its summary
    */
-  vector<Image_Summary> summaries;
-  for (const auto &i : files) {
-    Image img = load_image(i);
-    summaries.push_back(compute_summary(img));
+  unordered_map<Image_Summary, vector<string>> summaries;
+
+  auto load_time = std::chrono::high_resolution_clock::now();
+  cout << "Loading images took: "
+       << std::chrono::duration_cast<std::chrono::milliseconds>(load_time - begin).count()
+       << " milliseconds." << endl;
+
+  window->show_single("Comparing images...", load_image(files[1]), false);
+
+  for (const auto &file : files) {
+      Image img = load_image(file);
+      Image_Summary summary = compute_summary(img);
+      summaries[summary].push_back(file);
+
+      cout << "File" << file << endl << endl;
   }
+
+  for (auto& [summary, filenames] : summaries) {
+      if (filenames.size() > 1) {
+          window->report_match(filenames); // report this group of duplicates
+      }
+  }
+
 
   auto end = std::chrono::high_resolution_clock::now();
   cout << "Total time: "
        << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin)
               .count()
        << " milliseconds." << endl;
-
 
   /**
    * TODO:
