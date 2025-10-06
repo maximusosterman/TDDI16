@@ -13,14 +13,85 @@ using std::endl;
 // typen.
 typedef vector<string> Dictionary;
 
+struct Node {
+    string name;
+    vector<Node*> neighbors {};
+};
+
+typedef vector<Node> Graph;
+
+bool words_diff_with_one(const string &word1, const string &word2) {
+
+    bool found_diff = false;
+
+    for (int i {}; i < 4; i++) {
+        if (word1[i] != word2[i]) {
+
+            if(!found_diff)
+                found_diff = true;
+
+            else
+                return false;
+        }
+    }
+
+    return true;
+}
+
+Graph create_graph(const Dictionary &dict, const string &from, const string &to) {
+
+    Graph graph {};
+    auto first_word = std::find(dict.begin(), dict.end(), from);
+
+    if (first_word == dict.end()) // If not in dict
+    return {};
+
+
+    Node current_node = Node {
+        name : *first_word
+    };
+
+    
+    for (auto &word : dict) {
+
+        if (*first_word == word)
+            continue;
+
+        if (words_diff_with_one(*first_word, word)) {
+            current_node.neighbors.push_back( new Node { word });
+        }
+    }
+    
+    graph.push_back(current_node);
+
+    cout << "CURRENT NODE: " << current_node.name << endl;
+
+    for (auto &node : graph) {
+        for (auto n : node.neighbors) {
+            cout << "NEIGHBORS: " << n->name << endl;
+        }
+    }
+
+    return graph;
+
+}
+
 /**
  * Hitta den kortaste ordkedjan från 'first' till 'second' givet de ord som finns i
  * 'dict'. Returvärdet är den ordkedja som hittats, första elementet ska vara 'from' och sista
  * 'to'. Om ingen ordkedja hittas kan en tom vector returneras.
  */
+
+
 vector<string> find_shortest(const Dictionary &dict, const string &from, const string &to) {
     vector<string> result;
-    cout << "TODO: Implement me!" << endl;
+
+    cout << "In find shortest" << endl;
+
+    Graph graph = create_graph(dict, from, to);
+
+
+
     return result;
 }
 
@@ -87,15 +158,15 @@ void read_questions(const Dictionary &dict) {
     string line;
     while (std::getline(std::cin, line)) {
         size_t space = line.find(' ');
-        if (space != string::npos) {
+        if (space != string::npos) { // Question 1 if there is a space
             string first = line.substr(0, space);
             string second = line.substr(space + 1);
-            vector<string> chain = find_shortest(dict, first, second);
+            vector<string> chain = find_shortest(dict, first, second); 
 
             cout << first << " " << second << ": ";
             print_answer(chain);
-        } else {
-            vector<string> chain = find_longest(dict, line);
+        } else { // Question 2 if no space
+            vector<string> chain = find_longest(dict, line); 
 
             cout << line << ": ";
             print_answer(chain);
@@ -104,6 +175,7 @@ void read_questions(const Dictionary &dict) {
 }
 
 int main() {
+
     Dictionary dict = read_dictionary();
     read_questions(dict);
 

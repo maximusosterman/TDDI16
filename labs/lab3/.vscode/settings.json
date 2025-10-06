@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        ".als.json": "jsonc",
+        "*.scss": "scss",
+        "iostream": "cpp"
+    }
+}
