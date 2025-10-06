@@ -1,6 +1,9 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <algorithm>
+#include <queue>
+#include <unordered_map>
 
 using std::vector;
 using std::string;
@@ -19,77 +22,67 @@ struct Node {
     bool visited = false;
 };
 
-typedef vector<Node> Graph;
-
 bool words_diff_with_one(const string &word1, const string &word2) {
-
+    
     bool found_diff = false;
-
+    
     for (int i {}; i < 4; i++) {
         if (word1[i] != word2[i]) {
-
+            
             if(!found_diff)
-                found_diff = true;
-
+            found_diff = true;
+            
             else
-                return false;
+            return false;
         }
     }
-
+    
     return true;
 }
 
-Graph create_graph(const Dictionary &dict, Node* current, const string &to) {
 
-    if (current->visited)
-        return {};
+typedef vector<Node*> Graph;
 
-    if (current->name == to)
-        return {};
+Graph create_graph(const Dictionary &dict) {
+    Graph graph;
 
-    Graph graph {};
-    auto start = std::find(dict.begin(), dict.end(), current->name);
-
+    // Skapa alla noder först
     for (const auto& word : dict) {
-        if (*start == word) continue;
+        graph.push_back(new Node{word});
+    }
 
-        if (words_diff_with_one(current->name, word)) {
-            Node* neighbor = new Node{ word };
-            current->neighbors.push_back(neighbor);
-            create_graph(dict, neighbor, to);
+    // Lägg till grannar mellan noder som skiljer sig med 1 bokstav
+    for (auto* node : graph) {
+        for (auto* other : graph) {
+            if (node == other) continue;
+            if (words_diff_with_one(node->name, other->name)) {
+                node->neighbors.push_back(other);
+            }
         }
     }
 
-    return {};
-
+    return graph;
 }
+
 
 /**
  * Hitta den kortaste ordkedjan från 'first' till 'second' givet de ord som finns i
  * 'dict'. Returvärdet är den ordkedja som hittats, första elementet ska vara 'from' och sista
  * 'to'. Om ingen ordkedja hittas kan en tom vector returneras.
  */
-
-
 vector<string> find_shortest(const Dictionary &dict, const string &from, const string &to) {
-    vector<string> result;
+    // Bygg grafen en gång
+    Graph graph = create_graph(dict);
 
-    cout << "In find shortest" << endl;
+    for (auto* g : graph) {
+        cout << "Word: " << g->name << " | Neighbors: ";
 
-    auto find_from = std::find(dict.begin(), dict.end(), from);
+        for (auto* neighbor : g->neighbors) {
+            cout << neighbor->name << " ";
+        }
 
-    if (find_from == dict.end())
-        return result;
-
-    Node* first_node = new Node {.name = from};
-
-    Graph graph = create_graph(dict, first_node, to);
-
-    for (const auto& g : graph) {
-        cout << g.name << endl;
+        cout << endl;
     }
-
-    return result;
 }
 
 /**
