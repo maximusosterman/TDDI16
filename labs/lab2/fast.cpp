@@ -45,11 +45,10 @@ public:
 // Compute an Image_Summary from an image. This is described in detail in the
 // lab instructions.
 Image_Summary compute_summary(const Image &image) {
-  const size_t summary_size = 8;
+  const size_t summary_size = 6;
   Image_Summary result;
   Image small_image = image.shrink(summary_size + 1, summary_size + 1);
 
-  // Code duplication need to be removed
   //  Horisontellt
   for (size_t y = 0; y < summary_size + 1; y++) {
     for (size_t x = 0; x < summary_size; x++) {
@@ -71,6 +70,18 @@ Image_Summary compute_summary(const Image &image) {
   return result;
 }
 
+size_t cusotm_hash(const std::vector<bool> &v) {
+  size_t h = 0;
+  for (bool b : v) {
+    // Ta "hash" av bool (0 eller 1)
+    size_t bh = static_cast<size_t>(b);
+
+    // Kombinera med befintlig hash
+    h ^= bh + 0x9e3779b97f4a7c15ULL + (h << 6) + (h >> 2);
+  }
+  return h;
+}
+
 bool operator==(const Image_Summary &lhs, const Image_Summary &rhs) {
   return lhs.vertical == rhs.vertical && lhs.horizontal == rhs.horizontal;
 }
@@ -82,12 +93,12 @@ public:
   // Typen ska kunna användas som ett funktionsobjekt.
   // Vi behöver därför överlagra funktionsanropsoperatorn (operator ()).
   size_t operator()(const Image_Summary &to_hash) const {
-    size_t h1 = hash<vector<bool>>{}(to_hash.vertical);
-    size_t h2 = hash<vector<bool>>{}(to_hash.horizontal);
-    cout << "h1: " << h1 << endl;
-    cout << "h2: " << h2 << endl;
+    size_t h1 = cusotm_hash(to_hash.vertical);
+    size_t h2 = cusotm_hash(to_hash.horizontal);
+    // cout << "h1: " << h1 << endl;
+    // cout << "h2: " << h2 << endl;
     auto result = h1 ^ (h2 << 1);
-    cout << "Result: " << result << endl;
+    // cout << "Result: " << result << endl;
     return result; // or use boost::hash_combine
   }
 };
@@ -113,6 +124,9 @@ int main(int argc, const char *argv[]) {
 
   auto begin = std::chrono::high_resolution_clock::now();
 
+  window->show_single("Loading images...", load_image(files[0]), false);
+
+
   /**
    * TODO: DONE
    * - For each file:
@@ -123,25 +137,26 @@ int main(int argc, const char *argv[]) {
 
   auto load_time = std::chrono::high_resolution_clock::now();
   cout << "Loading images took: "
-       << std::chrono::duration_cast<std::chrono::milliseconds>(load_time - begin).count()
+       << std::chrono::duration_cast<std::chrono::milliseconds>(load_time -
+                                                                begin)
+              .count()
        << " milliseconds." << endl;
 
   window->show_single("Comparing images...", load_image(files[1]), false);
 
   for (const auto &file : files) {
-      Image img = load_image(file);
-      Image_Summary summary = compute_summary(img);
-      summaries[summary].push_back(file);
+    Image img = load_image(file);
+    Image_Summary summary = compute_summary(img);
+    summaries[summary].push_back(file);
 
-      cout << "File" << file << endl << endl;
+    //cout << "File" << file << endl << endl;
   }
 
-  for (auto& [summary, filenames] : summaries) {
-      if (filenames.size() > 1) {
-          window->report_match(filenames); // report this group of duplicates
-      }
+  for (auto &[summary, filenames] : summaries) {
+    if (filenames.size() > 1) {
+      window->report_match(filenames); // report this group of duplicates
+    }
   }
-
 
   auto end = std::chrono::high_resolution_clock::now();
   cout << "Total time: "
