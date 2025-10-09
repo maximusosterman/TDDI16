@@ -23,20 +23,20 @@ struct Node {
 };
 
 bool words_diff_with_one(const string &word1, const string &word2) {
-    
+
     bool found_diff = false;
-    
+
     for (int i {}; i < 4; i++) {
         if (word1[i] != word2[i]) {
-            
+
             if(!found_diff)
             found_diff = true;
-            
+
             else
             return false;
         }
     }
-    
+
     return true;
 }
 
@@ -75,14 +75,16 @@ vector<string> find_shortest(const Dictionary &dict, const string &from, const s
     Graph graph = create_graph(dict);
 
     for (auto* g : graph) {
-        cout << "Word: " << g->name << " | Neighbors: ";
+        cout << "Word: " << g->name << " r Neighbors: ";
 
         for (auto* neighbor : g->neighbors) {
             cout << neighbor->name << " ";
         }
 
         cout << endl;
+
     }
+    return {};
 }
 
 /**
@@ -165,6 +167,8 @@ void read_questions(const Dictionary &dict) {
 }
 
 int main() {
+
+    cout << "Test" << endl;
 
     Dictionary dict = read_dictionary();
     read_questions(dict);

@@ -7,11 +7,13 @@
     "label": "Debug native binary",
     "build": {
       "command": "make",
-      "args": ["-j8"],
+      "args": [],
       "cwd": "$ZED_WORKTREE_ROOT"
     },
-    "program": "$ZED_WORKTREE_ROOT/build/prog",
+    "program": "./main",
     "request": "launch",
-    "adapter": "CodeLLDB"
+    "adapter": "CodeLLDB",
+    "args": [],
+    "initCommands": ["settings set target.input-path combined.txt"]
   }
 ]
