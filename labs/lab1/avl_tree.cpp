@@ -236,6 +236,7 @@ void AVL_Tree_Node<Comparable>::remove(const Comparable &x, Node_Pointer &t) {
             double_rotate_with_right_child(t);
         }
     }
+    calculate_height(t);
 }
 
 /**
