@@ -33,7 +33,8 @@ fast: O(n)
 - Testa olika värden på "summary_size" (exempelvis mellan 6 och 10). Hur
   påverkar detta vilka dubbletter som hittas i datamängden "large"?
 
-  6 i summer_size gav 9 matches, medan 10 i summer_size gav 5
+  6 i summer_size gav 9 matches, medan 10 i summer_size gav 5. Anledningen varför vi får färre matches när vi ökar summery_size beror på att vi kollar på fler pixlar. 
+  Desto färre pixlar vi tittar på ju större chans att det klassas som samma bild. Detta på grund av att vi skalar ner bilden vlket gör den mer generell. 
 
 
 - Algoritmen som implementeras i "compute_summary" kan ses som att vi beräknar
@@ -44,8 +45,9 @@ fast: O(n)
   kod som *använder* "compute_summary"?) Tycker du att den givna funktionen
   uppfyller dessa egenskaper?
 
-  compute_summary behöver vara stabil, effektiv och ge liknande resultat för liknande bilder samt olika resultat för olika bilder. Funktionen uppfyller det viktigaste kravet med pixeljämförning
-
+  "Liknande" indata ska ge samma utdata då "liknande" är specifierat enligt labbuppgiften. Image_summary ska vara ett värde som kan användas för att hashas. Funktionen ska gallra bort onödiga detaljer genom att generallisera indatan.
+  Funktionen uppfyller kraven, inte perfekt, men dugligt för labben.
+  
 - Ser du några problem med metoden för att se om två bilder är lika dana?
   Fundera exempelvis på vilka typer av olikheter som tolereras, och vilka
   typer av olikheter som anses vara för stora. Matchar detta din uppfattning

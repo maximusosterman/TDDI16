@@ -169,5 +169,36 @@ int main(int argc, const char *argv[]) {
    * - Display sets of files with equal summaries
    */
 
+<<<<<<< HEAD
+    auto begin = std::chrono::high_resolution_clock::now();
+
+    
+    /**
+     * TODO:
+     * - For each file:
+     *   - Load the file
+     *   - Compute its summary
+     */
+    vector<Image_Summary> summaries;
+    for (const auto &i : files){
+        Image img = load_image(i);
+        summaries.push_back(compute_summary(img));
+    }
+
+
+
+    auto end = std::chrono::high_resolution_clock::now();
+    cout << "Total time: "
+         << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
+         << " milliseconds." << endl;
+
+    /**
+     * TODO:
+     * - Display sets of files with equal summaries
+     */
+
+    return 0;
+=======
   return 0;
+>>>>>>> bdf2f44b152793075a1deac670ffe84ed634afd8
 }
