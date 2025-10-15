@@ -110,10 +110,10 @@ vector<string> find_longest(const Dictionary &dict, const string &word) {
     if (!dict.count(word))
         return path;
 
-    parent[word] = nullptr;
+    parent[word] = "";
     distance[word] = 0;
     q.push(word);
-    
+    visited.insert(word);
 
     while (!q.empty()) {
         string current_word = q.front(); q.pop();
