@@ -5,6 +5,8 @@
 #include <queue>
 #include <unordered_map>
 #include <queue>
+#include <unordered_set>
+
 
 using std::vector;
 using std::string;
@@ -20,7 +22,6 @@ typedef vector<string> Dictionary;
 struct Node {
     string name;
     vector<Node*> neighbors {};
-    bool visited = false;
 };
 
 typedef vector<Node*> Graph;
@@ -31,48 +32,24 @@ const std::vector<char> alphabet{
     'n','o','p','q','r','s','t','u','v','w','x','y','z'
 };
 
-void find_neighbors(Node* &current_node, const Dictionary &dict) {
+vector<Node*> find_neighbors(string &word, const Dictionary &dict) {
+    vector<Node*> neighbors; 
+    
     for (int letter {}; letter < LEN_WORD; letter++) {
 
-        string curr_word = current_node->name;
+        string curr_word = word;
 
         for (auto character : alphabet) {
             curr_word[letter] = character;
 
-            auto it = std::find(dict.begin(), dict.end(), curr_word);
-
-            if(it != dict.end()) { // A neighboring word was found
-                current_node->neighbors.push_back(new Node {curr_word});
-            }
+            if(std::find(dict.begin(), dict.end(), curr_word) != dict.end())  // A neighboring word was found
+                neighbors.push_back(new Node{curr_word});
+            
         }
     }
+    return neighbors;
     
 }
-
-// Graph create_graph(const Dictionary &dict, const string &from ) {
-//     Graph graph {};
-//     string curr_word = from;
-
-//     Node* start_node = new Node {from};
-
-//     graph.push_back(start_node);
-
-    
-
-//     return graph;
-// }
-
-// Node* find_word_in_graph(const string& word, const Graph graph) {
-
-//     Node* word_pointer {};
-    
-//     for (auto g: graph) {
-//         if(g->name == word)
-//             word_pointer = g;
-//     }
-
-//     return word_pointer;
-// }
 
 /**
  * Hitta den kortaste ordkedjan från 'first' till 'second' givet de ord som finns i
@@ -80,7 +57,6 @@ void find_neighbors(Node* &current_node, const Dictionary &dict) {
  * 'to'. Om ingen ordkedja hittas kan en tom vector returneras.
  */
 vector<string> find_shortest(const Dictionary &dict, const string &from, const string &to) {
-    // Bygg grafen en gång
 
     std::vector<string> path;
 
@@ -88,15 +64,14 @@ vector<string> find_shortest(const Dictionary &dict, const string &from, const s
         return {};
         
     Node* start {new Node { from }};
-    Node* goal {};
-
-    find_neighbors(start, dict);
+    Node* goal = nullptr;
 
     // Queue to help with the BFS traversal.
     std::queue<Node*> q {};
     std::unordered_map<Node*, Node*> parent {};
+    std::unordered_set<string> visited {};
 
-    start->visited = true;
+    visited.insert(from);
     parent[start] = nullptr;
     q.push(start);
     
@@ -104,8 +79,8 @@ vector<string> find_shortest(const Dictionary &dict, const string &from, const s
     
     while (!q.empty()) {
         // point currentVertex at front vertex from the queue.
-        Node* current_node = q.front();
-        q.pop();
+        Node* current_node = q.front(); q.pop();
+        
 
         if (current_node->name == to) { // It is not our goal
             found = true;
@@ -113,13 +88,15 @@ vector<string> find_shortest(const Dictionary &dict, const string &from, const s
             break;
         }
 
-        for (Node* neighbor : current_node->neighbors) {
-            if (!neighbor->visited) {   
-                neighbor->visited = true;                
+        vector<Node*> neighbors = find_neighbors(current_node->name, dict);
+
+        for (Node* neighbor : neighbors) {
+            if (!visited.count(neighbor->name)) {   
+                visited.insert(neighbor->name);;                
                 parent[neighbor] = current_node;
                 q.push(neighbor);
-                find_neighbors(neighbor, dict);
-            }
+            } else
+                delete neighbor;
         }
     }
 
@@ -131,6 +108,9 @@ vector<string> find_shortest(const Dictionary &dict, const string &from, const s
         
     }
 
+    for (auto &p : parent)
+        delete p.first;
+
     return path;
 }
 
@@ -139,20 +119,18 @@ vector<string> find_shortest(const Dictionary &dict, const string &from, const s
  * ordkedja som hittats. Det sista elementet ska vara 'word'.
  */
 vector<string> find_longest(const Dictionary &dict, const string &word) {
-    
-    vector<string> path {};
 
+    std::vector<string> path {};
     if (std::find(dict.begin(), dict.end(), word) == dict.end())
-        return path;
+        return {};
         
     Node* start = new Node { word };
-    find_neighbors(start, dict);
     
     std::queue<Node*> q {};
     std::unordered_map<Node*, Node*> parent {};
     std::unordered_map<Node*, int> distance {};
+    std::unordered_set<string> visited;
 
-    start->visited = true;
     parent[start] = nullptr;
     distance[start] = 0;
     q.push(start);
@@ -160,15 +138,17 @@ vector<string> find_longest(const Dictionary &dict, const string &word) {
     while (!q.empty()) {
         Node* current_node = q.front();
         q.pop();
-        
-        for (Node* neighbor: current_node->neighbors) {
-            if (!neighbor->visited) {
-                neighbor->visited = true;
+
+        vector<Node*> neighbors = find_neighbors(current_node->name, dict);
+
+        for (Node* neighbor: neighbors) {
+            if (!visited.count(neighbor->name)) {   
+                visited.insert(neighbor->name);;     
                 parent[neighbor] = current_node;
                 distance[neighbor] = distance[current_node] + 1;
                 q.push(neighbor); 
-                find_neighbors(neighbor, dict);
-            }
+            }else
+                delete neighbor;
         }
     }
         
@@ -183,6 +163,11 @@ vector<string> find_longest(const Dictionary &dict, const string &word) {
 
     for(Node* n = farthest; n != nullptr; n = parent[n])
             path.push_back(n->name);
+
+
+    // cleanup
+    for (auto &p : parent)
+        delete p.first;
 
     return path;
 }
