@@ -33,17 +33,20 @@ const std::vector<char> alphabet{
 
 void find_neighbors(Node* &current_node, const Dictionary &dict) {
     for (int letter {}; letter < LEN_WORD; letter++) {
+
         string curr_word = current_node->name;
+
         for (auto character : alphabet) {
             curr_word[letter] = character;
 
             auto it = std::find(dict.begin(), dict.end(), curr_word);
 
-            if(it != dict.end()) // A neighboring word was found
-                current_node->neighbors.push_back(new Node {curr_word});       
+            if(it != dict.end()) { // A neighboring word was found
+                current_node->neighbors.push_back(new Node {curr_word});
+            }
         }
     }
-
+    
 }
 
 // Graph create_graph(const Dictionary &dict, const string &from ) {
@@ -81,6 +84,9 @@ vector<string> find_shortest(const Dictionary &dict, const string &from, const s
 
     std::vector<string> path;
 
+    if (std::find(dict.begin(), dict.end(), from) == dict.end())
+        return {};
+        
     Node* start {new Node { from }};
     Node* goal {};
 
@@ -101,11 +107,11 @@ vector<string> find_shortest(const Dictionary &dict, const string &from, const s
         Node* current_node = q.front();
         q.pop();
 
-        if (current_node->name == to) {
+        if (current_node->name == to) { // It is not our goal
             found = true;
             goal = current_node;
             break;
-        } 
+        }
 
         for (Node* neighbor : current_node->neighbors) {
             if (!neighbor->visited) {   
@@ -118,7 +124,6 @@ vector<string> find_shortest(const Dictionary &dict, const string &from, const s
     }
 
     if (found){
-        
         for(Node* n = goal; n != nullptr; n = parent[n])
             path.push_back(n->name);
 
@@ -134,51 +139,52 @@ vector<string> find_shortest(const Dictionary &dict, const string &from, const s
  * ordkedja som hittats. Det sista elementet ska vara 'word'.
  */
 vector<string> find_longest(const Dictionary &dict, const string &word) {
-
-    // Graph graph = create_graph(dict);
-    // vector<string> path {};
-
-    // Node* start = find_word_in_graph(word, graph);
-
-    // if (start == nullptr)
-    //     return path;
-
-    // std::queue<Node*> q {};
-    // std::unordered_map<Node*, Node*> parent {};
-    // std::unordered_map<Node*, int> distance {};
-
-    // start->visited = true;
-    // parent[start] = nullptr;
-    // distance[start] = 0;
-    // q.push(start);
     
-    // while (!q.empty()) {
-    //     Node* current_node = q.front();
-    //     q.pop();
-        
-    //     for (Node* neighbor: current_node->neighbors) {
-    //         if (!neighbor->visited) {
-    //             neighbor->visited = true;
-    //             parent[neighbor] = current_node;
-    //             distance[neighbor] = distance[current_node] + 1;
-    //             q.push(neighbor); 
-    //         }
-    //     }
-    // }
-        
-    // Node* farthest = start;
-    // int max_dist = 0;
-    // for(auto& [node, dist] : distance) {
-    //     if (dist > max_dist) {
-    //         farthest = node;
-    //         max_dist = dist;
-    //     }
-    // }
+    vector<string> path {};
 
-    // for(Node* n = farthest; n != nullptr; n = parent[n])
-    //         path.push_back(n->name);
+    if (std::find(dict.begin(), dict.end(), word) == dict.end())
+        return path;
+        
+    Node* start = new Node { word };
+    find_neighbors(start, dict);
+    
+    std::queue<Node*> q {};
+    std::unordered_map<Node*, Node*> parent {};
+    std::unordered_map<Node*, int> distance {};
 
-    // return path;
+    start->visited = true;
+    parent[start] = nullptr;
+    distance[start] = 0;
+    q.push(start);
+    
+    while (!q.empty()) {
+        Node* current_node = q.front();
+        q.pop();
+        
+        for (Node* neighbor: current_node->neighbors) {
+            if (!neighbor->visited) {
+                neighbor->visited = true;
+                parent[neighbor] = current_node;
+                distance[neighbor] = distance[current_node] + 1;
+                q.push(neighbor); 
+                find_neighbors(neighbor, dict);
+            }
+        }
+    }
+        
+    Node* farthest = start;
+    int max_dist = 0;
+    for(auto& [node, dist] : distance) {
+        if (dist > max_dist) {
+            farthest = node;
+            max_dist = dist;
+        }
+    }
+
+    for(Node* n = farthest; n != nullptr; n = parent[n])
+            path.push_back(n->name);
+
+    return path;
 }
 
 
