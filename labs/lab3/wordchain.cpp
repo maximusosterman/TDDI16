@@ -71,6 +71,9 @@ vector<string> bfs(Node* start, Node* goal) {
     // Queue to help with the BFS traversal.
     std::queue<Node*> q {};
     std::unordered_map<Node*, Node*> parent {};
+
+    if (start == nullptr or goal == nullptr)
+        cout << "THIS IS NULLPTR" << endl;
     
     start->visited = true;
     parent[start] = nullptr;
@@ -118,16 +121,15 @@ vector<string> find_shortest(const Dictionary &dict, const string &from, const s
     Node* start {};
     Node* goal {};
 
-    for(auto g: graph)
-    {
+    for(auto g: graph) {
         if(g->name == from)
-        {
             start = g;
-        }else if(g->name == to)
-        {
+
+        else if(g->name == to)
             goal = g;
-        }
     }
+
+
     
     vector<string> path = bfs(start, goal);
 
