@@ -23,60 +23,53 @@ struct Node {
     bool visited = false;
 };
 
-bool words_diff_with_one(const string &word1, const string &word2) {
-
-    bool found_diff = false;
-
-    for (int i {}; i < 4; i++) {
-        if (word1[i] != word2[i]) {
-
-            if(!found_diff)
-            found_diff = true;
-
-            else
-            return false;
-        }
-    }
-
-    return true;
-}
-
-
 typedef vector<Node*> Graph;
 
-Graph create_graph(const Dictionary &dict) {
-    Graph graph;
+const int LEN_WORD = 4;
+const std::vector<char> alphabet{
+    'a','b','c','d','e','f','g','h','i','j','k','l','m',
+    'n','o','p','q','r','s','t','u','v','w','x','y','z'
+};
 
-    // Skapa alla noder först
-    for (const auto& word : dict) {
-        graph.push_back(new Node{word});
-    }
+void find_neighbors(Node* &current_node, const Dictionary &dict) {
+    for (int letter {}; letter < LEN_WORD; letter++) {
+        string curr_word = current_node->name;
+        for (auto character : alphabet) {
+            curr_word[letter] = character;
 
+            auto it = std::find(dict.begin(), dict.end(), curr_word);
 
-    // Lägg till grannar mellan noder som skiljer sig med 1 bokstav
-    for (auto* node : graph) {
-        for (auto* other : graph) {
-            if (node == other) continue;
-            if (words_diff_with_one(node->name, other->name)) {
-                node->neighbors.push_back(other);
-            }
+            if(it != dict.end()) // A neighboring word was found
+                current_node->neighbors.push_back(new Node {curr_word});       
         }
     }
 
-    return graph;
 }
 
-Node* find_word_in_graph(const string& word, const Graph graph) {
+// Graph create_graph(const Dictionary &dict, const string &from ) {
+//     Graph graph {};
+//     string curr_word = from;
 
-    Node* word_pointer {};
+//     Node* start_node = new Node {from};
+
+//     graph.push_back(start_node);
+
     
-    for (auto g: graph) {
-        if(g->name == word)
-            word_pointer = g;
-    }
 
-    return word_pointer;
-}
+//     return graph;
+// }
+
+// Node* find_word_in_graph(const string& word, const Graph graph) {
+
+//     Node* word_pointer {};
+    
+//     for (auto g: graph) {
+//         if(g->name == word)
+//             word_pointer = g;
+//     }
+
+//     return word_pointer;
+// }
 
 /**
  * Hitta den kortaste ordkedjan från 'first' till 'second' givet de ord som finns i
@@ -85,16 +78,13 @@ Node* find_word_in_graph(const string& word, const Graph graph) {
  */
 vector<string> find_shortest(const Dictionary &dict, const string &from, const string &to) {
     // Bygg grafen en gång
-    Graph graph = create_graph(dict);
+
     std::vector<string> path;
 
+    Node* start {new Node { from }};
+    Node* goal {};
 
-    Node* start {find_word_in_graph(from, graph)};
-    Node* goal {find_word_in_graph(to, graph)};
-
-    if (start == nullptr or goal == nullptr)
-        return path;
-
+    find_neighbors(start, dict);
 
     // Queue to help with the BFS traversal.
     std::queue<Node*> q {};
@@ -111,8 +101,9 @@ vector<string> find_shortest(const Dictionary &dict, const string &from, const s
         Node* current_node = q.front();
         q.pop();
 
-        if (current_node == goal) {
+        if (current_node->name == to) {
             found = true;
+            goal = current_node;
             break;
         } 
 
@@ -121,6 +112,7 @@ vector<string> find_shortest(const Dictionary &dict, const string &from, const s
                 neighbor->visited = true;                
                 parent[neighbor] = current_node;
                 q.push(neighbor);
+                find_neighbors(neighbor, dict);
             }
         }
     }
@@ -143,50 +135,50 @@ vector<string> find_shortest(const Dictionary &dict, const string &from, const s
  */
 vector<string> find_longest(const Dictionary &dict, const string &word) {
 
-    Graph graph = create_graph(dict);
-    vector<string> path {};
+    // Graph graph = create_graph(dict);
+    // vector<string> path {};
 
-    Node* start = find_word_in_graph(word, graph);
+    // Node* start = find_word_in_graph(word, graph);
 
-    if (start == nullptr)
-        return path;
+    // if (start == nullptr)
+    //     return path;
 
-    std::queue<Node*> q {};
-    std::unordered_map<Node*, Node*> parent {};
-    std::unordered_map<Node*, int> distance {};
+    // std::queue<Node*> q {};
+    // std::unordered_map<Node*, Node*> parent {};
+    // std::unordered_map<Node*, int> distance {};
 
-    start->visited = true;
-    parent[start] = nullptr;
-    distance[start] = 0;
-    q.push(start);
+    // start->visited = true;
+    // parent[start] = nullptr;
+    // distance[start] = 0;
+    // q.push(start);
     
-    while (!q.empty()) {
-        Node* current_node = q.front();
-        q.pop();
+    // while (!q.empty()) {
+    //     Node* current_node = q.front();
+    //     q.pop();
         
-        for (Node* neighbor: current_node->neighbors) {
-            if (!neighbor->visited) {
-                neighbor->visited = true;
-                parent[neighbor] = current_node;
-                distance[neighbor] = distance[current_node] + 1;
-                q.push(neighbor); 
-            }
-        }
-    }
+    //     for (Node* neighbor: current_node->neighbors) {
+    //         if (!neighbor->visited) {
+    //             neighbor->visited = true;
+    //             parent[neighbor] = current_node;
+    //             distance[neighbor] = distance[current_node] + 1;
+    //             q.push(neighbor); 
+    //         }
+    //     }
+    // }
         
-    Node* farthest = start;
-    int max_dist = 0;
-    for(auto& [node, dist] : distance) {
-        if (dist > max_dist) {
-            farthest = node;
-            max_dist = dist;
-        }
-    }
+    // Node* farthest = start;
+    // int max_dist = 0;
+    // for(auto& [node, dist] : distance) {
+    //     if (dist > max_dist) {
+    //         farthest = node;
+    //         max_dist = dist;
+    //     }
+    // }
 
-    for(Node* n = farthest; n != nullptr; n = parent[n])
-            path.push_back(n->name);
+    // for(Node* n = farthest; n != nullptr; n = parent[n])
+    //         path.push_back(n->name);
 
-    return path;
+    // return path;
 }
 
 
