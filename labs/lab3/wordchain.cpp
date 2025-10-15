@@ -7,7 +7,6 @@
 #include <queue>
 #include <unordered_set>
 
-
 using std::vector;
 using std::string;
 using std::cout;
@@ -17,14 +16,7 @@ using std::endl;
 // representationen av en ordlista utefter vad din implementation behöver. Funktionen
 // "read_questions" skickar ordlistan till "find_shortest" och "find_longest" med hjälp av denna
 // typen.
-typedef vector<string> Dictionary;
-
-struct Node {
-    string name;
-    vector<Node*> neighbors {};
-};
-
-typedef vector<Node*> Graph;
+typedef std::unordered_set<string> Dictionary;
 
 const int LEN_WORD = 4;
 const std::vector<char> alphabet{
@@ -32,8 +24,8 @@ const std::vector<char> alphabet{
     'n','o','p','q','r','s','t','u','v','w','x','y','z'
 };
 
-vector<Node*> find_neighbors(string &word, const Dictionary &dict) {
-    vector<Node*> neighbors; 
+vector<string> find_neighbors(string &word, const Dictionary &dict) {
+    vector<string> neighbors; 
     
     for (int letter {}; letter < LEN_WORD; letter++) {
 
@@ -42,8 +34,8 @@ vector<Node*> find_neighbors(string &word, const Dictionary &dict) {
         for (auto character : alphabet) {
             curr_word[letter] = character;
 
-            if(std::find(dict.begin(), dict.end(), curr_word) != dict.end())  // A neighboring word was found
-                neighbors.push_back(new Node{curr_word});
+            if (dict.count(curr_word))  // A neighboring word was found
+                neighbors.push_back(curr_word);
             
         }
     }
@@ -57,59 +49,47 @@ vector<Node*> find_neighbors(string &word, const Dictionary &dict) {
  * 'to'. Om ingen ordkedja hittas kan en tom vector returneras.
  */
 vector<string> find_shortest(const Dictionary &dict, const string &from, const string &to) {
-
-    std::vector<string> path;
-
-    if (std::find(dict.begin(), dict.end(), from) == dict.end())
-        return {};
         
-    Node* start {new Node { from }};
-    Node* goal = nullptr;
-
-    // Queue to help with the BFS traversal.
-    std::queue<Node*> q {};
-    std::unordered_map<Node*, Node*> parent {};
+    std::queue<string> q {};
+    std::unordered_map<string, string> parent {};
     std::unordered_set<string> visited {};
-
-    visited.insert(from);
-    parent[start] = nullptr;
-    q.push(start);
+    std::vector<string> path {};
     
+    q.push(from);
+    visited.insert(from);
+    
+    if (!dict.count(from))
+        return path;
+
     bool found = false;
     
     while (!q.empty()) {
         // point currentVertex at front vertex from the queue.
-        Node* current_node = q.front(); q.pop();
-        
+        string current_word = q.front(); q.pop();
 
-        if (current_node->name == to) { // It is not our goal
+        if (current_word == to) { // It is not our goal
             found = true;
-            goal = current_node;
             break;
         }
 
-        vector<Node*> neighbors = find_neighbors(current_node->name, dict);
+        vector<string> neighbors = find_neighbors(current_word, dict);
 
-        for (Node* neighbor : neighbors) {
-            if (!visited.count(neighbor->name)) {   
-                visited.insert(neighbor->name);;                
-                parent[neighbor] = current_node;
+        for (auto neighbor : neighbors) {
+            if (!visited.count(neighbor)) {   
+                visited.insert(neighbor);;                
+                parent[neighbor] = current_word;
                 q.push(neighbor);
-            } else
-                delete neighbor;
+            }
         }
     }
 
-    if (found){
-        for(Node* n = goal; n != nullptr; n = parent[n])
-            path.push_back(n->name);
+    if (found) {
+        for(string w = to; w != ""; w = parent[w])
+            path.push_back(w);
 
         std::reverse(path.begin(), path.end());
         
     }
-
-    for (auto &p : parent)
-        delete p.first;
 
     return path;
 }
@@ -121,53 +101,46 @@ vector<string> find_shortest(const Dictionary &dict, const string &from, const s
 vector<string> find_longest(const Dictionary &dict, const string &word) {
 
     std::vector<string> path {};
-    if (std::find(dict.begin(), dict.end(), word) == dict.end())
-        return {};
-        
-    Node* start = new Node { word };
     
-    std::queue<Node*> q {};
-    std::unordered_map<Node*, Node*> parent {};
-    std::unordered_map<Node*, int> distance {};
+    std::queue<string> q {};
+    std::unordered_map<string, string> parent {};
+    std::unordered_map<string, int> distance {};
     std::unordered_set<string> visited;
 
-    parent[start] = nullptr;
-    distance[start] = 0;
-    q.push(start);
+    if (!dict.count(word))
+        return path;
+
+    parent[word] = nullptr;
+    distance[word] = 0;
+    q.push(word);
     
+
     while (!q.empty()) {
-        Node* current_node = q.front();
-        q.pop();
+        string current_word = q.front(); q.pop();
 
-        vector<Node*> neighbors = find_neighbors(current_node->name, dict);
+        vector<string> neighbors = find_neighbors(current_word, dict);
 
-        for (Node* neighbor: neighbors) {
-            if (!visited.count(neighbor->name)) {   
-                visited.insert(neighbor->name);;     
-                parent[neighbor] = current_node;
-                distance[neighbor] = distance[current_node] + 1;
+        for (string neighbor: neighbors) {
+            if (!visited.count(neighbor)) {   
+                visited.insert(neighbor);;     
+                parent[neighbor] = current_word;
+                distance[neighbor] = distance[current_word] + 1;
                 q.push(neighbor); 
-            }else
-                delete neighbor;
+            }
         }
     }
         
-    Node* farthest = start;
+    string farthest = word;
     int max_dist = 0;
-    for(auto& [node, dist] : distance) {
+    for(auto& [word, dist] : distance) {
         if (dist > max_dist) {
-            farthest = node;
+            farthest = word;
             max_dist = dist;
         }
     }
 
-    for(Node* n = farthest; n != nullptr; n = parent[n])
-            path.push_back(n->name);
-
-
-    // cleanup
-    for (auto &p : parent)
-        delete p.first;
+    for(string w = farthest; w != ""; w = parent[w])
+            path.push_back(w);
 
     return path;
 }
