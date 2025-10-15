@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <queue>
 #include <unordered_map>
+#include <queue>
 
 using std::vector;
 using std::string;
@@ -51,6 +52,7 @@ Graph create_graph(const Dictionary &dict) {
         graph.push_back(new Node{word});
     }
 
+
     // Lägg till grannar mellan noder som skiljer sig med 1 bokstav
     for (auto* node : graph) {
         for (auto* other : graph) {
@@ -65,6 +67,45 @@ Graph create_graph(const Dictionary &dict) {
 }
 
 
+vector<string> bfs(Node* start, Node* goal) {
+    // Queue to help with the BFS traversal.
+    std::queue<Node*> q {};
+    std::unordered_map<Node*, Node*> parent {};
+    
+    start->visited = true;
+    parent[start] = nullptr;
+    q.push(start);
+    
+    bool found = false;
+    
+    while (!q.empty()) {
+        // point currentVertex at front vertex from the queue.
+        Node* current_node = q.front();
+        q.pop();
+
+        if (current_node == goal) {
+            found = true;
+            break;
+        } 
+
+        for (Node* neighbor : current_node->neighbors) {
+            if (!neighbor->visited) {   
+                neighbor->visited = true;                
+                parent[neighbor] = current_node;
+                q.push(neighbor);
+            }
+        }
+    }
+
+    if (found){
+        std::vector<string> path;
+        for(Node* n = goal; n != nullptr; n = parent[n])
+            path.push_back(n->name);
+        
+        return path;
+    }
+}
+
 /**
  * Hitta den kortaste ordkedjan från 'first' till 'second' givet de ord som finns i
  * 'dict'. Returvärdet är den ordkedja som hittats, första elementet ska vara 'from' och sista
@@ -74,17 +115,23 @@ vector<string> find_shortest(const Dictionary &dict, const string &from, const s
     // Bygg grafen en gång
     Graph graph = create_graph(dict);
 
-    for (auto* g : graph) {
-        cout << "Word: " << g->name << " r Neighbors: ";
+    Node* start {};
+    Node* goal {};
 
-        for (auto* neighbor : g->neighbors) {
-            cout << neighbor->name << " ";
+    for(auto g: graph)
+    {
+        if(g->name == from)
+        {
+            start = g;
+        }else if(g->name == to)
+        {
+            goal = g;
         }
-
-        cout << endl;
-
     }
-    return {};
+    
+    vector<string> path = bfs(start, goal);
+
+    return path;
 }
 
 /**
@@ -167,8 +214,6 @@ void read_questions(const Dictionary &dict) {
 }
 
 int main() {
-
-    cout << "Test" << endl;
 
     Dictionary dict = read_dictionary();
     read_questions(dict);
