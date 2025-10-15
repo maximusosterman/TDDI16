@@ -66,15 +66,40 @@ Graph create_graph(const Dictionary &dict) {
     return graph;
 }
 
+Node* find_word_in_graph(const string& word, const Graph graph) {
 
-vector<string> bfs(Node* start, Node* goal) {
+    Node* word_pointer {};
+    
+    for (auto g: graph) {
+        if(g->name == word)
+            word_pointer = g;
+    }
+
+    return word_pointer;
+}
+
+/**
+ * Hitta den kortaste ordkedjan från 'first' till 'second' givet de ord som finns i
+ * 'dict'. Returvärdet är den ordkedja som hittats, första elementet ska vara 'from' och sista
+ * 'to'. Om ingen ordkedja hittas kan en tom vector returneras.
+ */
+vector<string> find_shortest(const Dictionary &dict, const string &from, const string &to) {
+    // Bygg grafen en gång
+    Graph graph = create_graph(dict);
+    std::vector<string> path;
+
+
+    Node* start {find_word_in_graph(from, graph)};
+    Node* goal {find_word_in_graph(to, graph)};
+
+    if (start == nullptr or goal == nullptr)
+        return path;
+
+
     // Queue to help with the BFS traversal.
     std::queue<Node*> q {};
     std::unordered_map<Node*, Node*> parent {};
 
-    if (start == nullptr or goal == nullptr)
-        cout << "THIS IS NULLPTR" << endl;
-    
     start->visited = true;
     parent[start] = nullptr;
     q.push(start);
@@ -101,37 +126,13 @@ vector<string> bfs(Node* start, Node* goal) {
     }
 
     if (found){
-        std::vector<string> path;
+        
         for(Node* n = goal; n != nullptr; n = parent[n])
             path.push_back(n->name);
+
+        std::reverse(path.begin(), path.end());
         
-        return path;
     }
-}
-
-/**
- * Hitta den kortaste ordkedjan från 'first' till 'second' givet de ord som finns i
- * 'dict'. Returvärdet är den ordkedja som hittats, första elementet ska vara 'from' och sista
- * 'to'. Om ingen ordkedja hittas kan en tom vector returneras.
- */
-vector<string> find_shortest(const Dictionary &dict, const string &from, const string &to) {
-    // Bygg grafen en gång
-    Graph graph = create_graph(dict);
-
-    Node* start {};
-    Node* goal {};
-
-    for(auto g: graph) {
-        if(g->name == from)
-            start = g;
-
-        else if(g->name == to)
-            goal = g;
-    }
-
-
-    
-    vector<string> path = bfs(start, goal);
 
     return path;
 }
@@ -141,9 +142,51 @@ vector<string> find_shortest(const Dictionary &dict, const string &from, const s
  * ordkedja som hittats. Det sista elementet ska vara 'word'.
  */
 vector<string> find_longest(const Dictionary &dict, const string &word) {
-    vector<string> result(1, word);
-    cout << "TODO: Implement me!" << endl;
-    return result;
+
+    Graph graph = create_graph(dict);
+    vector<string> path {};
+
+    Node* start = find_word_in_graph(word, graph);
+
+    if (start == nullptr)
+        return path;
+
+    std::queue<Node*> q {};
+    std::unordered_map<Node*, Node*> parent {};
+    std::unordered_map<Node*, int> distance {};
+
+    start->visited = true;
+    parent[start] = nullptr;
+    distance[start] = 0;
+    q.push(start);
+    
+    while (!q.empty()) {
+        Node* current_node = q.front();
+        q.pop();
+        
+        for (Node* neighbor: current_node->neighbors) {
+            if (!neighbor->visited) {
+                neighbor->visited = true;
+                parent[neighbor] = current_node;
+                distance[neighbor] = distance[current_node] + 1;
+                q.push(neighbor); 
+            }
+        }
+    }
+        
+    Node* farthest = start;
+    int max_dist = 0;
+    for(auto& [node, dist] : distance) {
+        if (dist > max_dist) {
+            farthest = node;
+            max_dist = dist;
+        }
+    }
+
+    for(Node* n = farthest; n != nullptr; n = parent[n])
+            path.push_back(n->name);
+
+    return path;
 }
 
 
