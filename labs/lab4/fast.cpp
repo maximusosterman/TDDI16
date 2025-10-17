@@ -51,17 +51,18 @@ int main(int argc, const char* argv[]) {
 
             double slope = std::round(p.slopeTo(other_p) / tolerance) * tolerance;
 
-            cout << slope << endl;
+            //cout << slope << endl;
 
             angles[slope].push_back(other_p);
                 
         }
     
-        for (auto& [angle, group] : angles)
+        for (auto& [angle, group] : angles) {
             if (group.size() >= 3) {
                 group.push_back(p);
                 window->draw_line(group);
             }
+        }
     }
 
     auto end = chrono::high_resolution_clock::now();
