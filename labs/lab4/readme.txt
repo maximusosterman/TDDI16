@@ -12,11 +12,12 @@ Mönsterigenkänning
 
 brute:
 
-tidskomplexiteten för brute är O(N⁴) eftersom vi i värstafall måste iterera igenom alla punkter. Brute-lösningen matchar inte sitt värstafall i och med att k-loopen bara körs när 3 punkter ligger på (nästan) samma linje. 
+tidskomplexiteten för brute är O(N⁴) eftersom vi i värstafall måste iterera igenom alla fyra punkter och jämföra. Brute-lösningen matchar inte sitt värstafall i och med att k-loopen bara körs när 3 punkter ligger på (nästan) samma linje. 
 
 
 fast:
 
+tidskomplexiteten för fast är O(N²) eftersom vi i värstafall måste iterera igenom alla punkter. Här jämför vi bara 2 punkter med varandra åt taget och lägger in resultatet i en hashtabell. Lösningen har inget medelfall.
 
 - Fyll i tabellen nedan med riktiga körtider i sekunder när det känns
   vettigt att vänta på hela beräkningen.
@@ -25,15 +26,15 @@ fast:
     
       N       brute       sortering
  ----------------------------------
-    150
-    200
-    300
-    400
-    800
-   1600
-   3200
-   6400
-  12800
+    150        45ms         5ms
+    200        99ms         9ms
+    300       322ms         21ms
+    400       729ms         29ms
+    800       5659ms        99ms
+   1600      46957ms       379ms
+   3200     ~13min        1341ms
+   6400     ~3tim         5347ms
+  12800     ~53tim       22796ms 
 
 
 - Energianvändning
@@ -61,7 +62,7 @@ fast:
   (enligt Energimyndigheten).
  
   Kom ihåg: energi mäts ofta i kWh, vilket är:
-   energi (kWh) = effekt (kW) * tid (h)
+  energi (kWh) = effekt (kW) * tid (h)
 
   Tips: ett sätt att räkna på är att först räkna förbrukningen av
   ett system som inte gör något på ett helt år, sedan lägga till
@@ -76,7 +77,16 @@ fast:
 
 Förbrukning av brute på ett år: ? kWh
 
+Idle förbrukning: 0.008kW * 8760h = 70.08 kWh 
+extra förbrukning: 0.028kW * 3.34h/körning * 17520 körningar = 1630kWh
+totalt för brute: 70.08 + 1638 = 1708.08kWh/år
+
 Förbrukning av sotering på ett år: ? kWh
+
+idle förbrukning: 0.008kW*8760 = 70.08 kWh
+Extra förbrukning: 0.028kW * (5.347/3600h) * 17520 = 0.728kWh
+totalt för sortering: 70.08 + o.728 = 70.88 kWh/år
 
 Skillnad: ? kWh
 
+1708.08 - 70.88 = 1637.2kWh/år

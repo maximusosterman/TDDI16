@@ -50,9 +50,6 @@ int main(int argc, const char* argv[]) {
             if (&p == &other_p) continue;
 
             double slope = std::round(p.slopeTo(other_p) / tolerance) * tolerance;
-
-            //cout << slope << endl;
-
             angles[slope].push_back(other_p);
                 
         }
