@@ -22,7 +22,7 @@ public:
     // If the points are the same, negative infinity is returned
     // Otherwise, the angle between this and 'to', in radians, is returned
     double slopeTo(const Point &to) const;
-
+ 
     // Compare slopes to two other points and see if they are the same, given
     // the specified tolerance.
     bool sameSlope(const Point &a, const Point &b, double tolerance) const;
@@ -34,6 +34,7 @@ public:
 
     // Output.
     friend std::ostream& operator<<(std::ostream&, const Point&);
+
 };
 
 /**

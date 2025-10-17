@@ -8,6 +8,8 @@
 #include <algorithm>
 #include <vector>
 #include <chrono>
+#include <unordered_map>
+
 #include "point.h"
 #include "window.h"
 
@@ -19,7 +21,7 @@ int main(int argc, const char* argv[]) {
         return 1;
 
     // The array of points
-    vector<Point> points;
+    vector<Point> points {};
 
     // Read tolerance from cin
     double tolerance{};
@@ -39,10 +41,28 @@ int main(int argc, const char* argv[]) {
     window->draw_points(points);
 
     auto begin = chrono::high_resolution_clock::now();
+    
+    for (auto& p : points) {
+        
+        unordered_map<double, vector<Point>> angles {}; // Angle and vector of points on the same angle
+    
+        for (auto& other_p : points) {
+            if (&p == &other_p) continue;
 
-    /////////////////////////////////////////////////////////////////////////////
-    // Draw any lines that you find in 'points' using the function 'window->draw_line'.
-    /////////////////////////////////////////////////////////////////////////////
+            double slope = std::round(p.slopeTo(other_p) / tolerance) * tolerance;
+
+            cout << slope << endl;
+
+            angles[slope].push_back(other_p);
+                
+        }
+    
+        for (auto& [angle, group] : angles)
+            if (group.size() >= 3) {
+                group.push_back(p);
+                window->draw_line(group);
+            }
+    }
 
     auto end = chrono::high_resolution_clock::now();
     cout << "Computing line segments took "

@@ -12,6 +12,9 @@ Mönsterigenkänning
 
 brute:
 
+tidskomplexiteten för brute är O(N⁴) eftersom vi i värstafall måste iterera igenom alla punkter. Brute-lösningen matchar inte sitt värstafall i och med att k-loopen bara körs när 3 punkter ligger på (nästan) samma linje. 
+
+
 fast:
 
 
