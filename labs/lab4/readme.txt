@@ -12,7 +12,7 @@ Mönsterigenkänning
 
 brute:
 
-tidskomplexiteten för brute är O(N⁴) eftersom vi i värstafall måste iterera igenom alla fyra punkter och jämföra. Brute-lösningen matchar inte sitt värstafall i och med att k-loopen bara körs när 3 punkter ligger på (nästan) samma linje. 
+tidskomplexiteten för brute är O(N⁴) i värstafall eftersom då måste vi iterera igenom alla fyra punkter och jämföra. Brute-lösningen matchar inte sitt värstafall i och med att k-loopen bara körs när 3 punkter ligger på (nästan) samma linje vilket ger den ett medelfall på O(N³) i tidskomplexitet. 
 
 
 fast:
@@ -32,9 +32,9 @@ tidskomplexiteten för fast är O(N²) eftersom vi i värstafall måste iterera 
     400       729ms         29ms
     800       5659ms        99ms
    1600      46957ms       379ms
-   3200     ~13min        1341ms
-   6400     ~3tim         5347ms
-  12800     ~53tim       22796ms 
+   3200     ~13min         1341ms
+   6400     ~50min         5347ms
+  12800     ~6.67tim          22796ms 
 
 
 - Energianvändning
@@ -52,7 +52,7 @@ tidskomplexiteten för fast är O(N²) eftersom vi i värstafall måste iterera 
   - Systemet körs 24/7 under hela året.
   - Inget annat körs på det här systemet.
   - Systemet drar 8 W när det inte gör något (idle)
-  - Systemet drar 36 W när det arbetar (med 1 kärna)
+  - Systemet drar 36 W när det arbetar (med 1 kärna )
   - Räkna med att ditt program körs var 30:e minut (= 2 gånger/timme)
   - För- och efterbehandling är snabba, så vi kan bortse från dem
   - Indata till programmet innehåller ca 6400 punkter
@@ -77,9 +77,14 @@ tidskomplexiteten för fast är O(N²) eftersom vi i värstafall måste iterera 
 
 Förbrukning av brute på ett år: ? kWh
 
-Idle förbrukning: 0.008kW * 8760h = 70.08 kWh 
-extra förbrukning: 0.028kW * 3.34h/körning * 17520 körningar = 1630kWh
-totalt för brute: 70.08 + 1638 = 1708.08kWh/år
+  För N = 6400 uppskattas körtiden till ca 50 minuter per körning eftersom 
+  programmet tog 46 sekunder vid 1600 körningar och tiden ökar enligt N^3. 
+  Detta innebär att i praktiken arbetar programmet kontinuerligt hela året.
+
+  Total förbrukning: 
+    Effekt = 36 W = 0.036KW 
+    Tid = 8670 h (ett år)
+    Energi = 0.036 * 8670 = 315.36 KWh/år
 
 Förbrukning av sotering på ett år: ? kWh
 
@@ -89,4 +94,6 @@ totalt för sortering: 70.08 + o.728 = 70.88 kWh/år
 
 Skillnad: ? kWh
 
-1708.08 - 70.88 = 1637.2kWh/år
+315.36 - 70.88 = 244.48 kWh/år
+
+Skillnaden är ungefär lika stor som energiförbrukningen för en modern kyl & frys.
