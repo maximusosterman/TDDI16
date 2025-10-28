@@ -41,24 +41,43 @@ int main(int argc, const char* argv[]) {
     window->draw_points(points);
 
     auto begin = chrono::high_resolution_clock::now();
-    
+
     for (auto& p : points) {
-        
-        unordered_map<double, vector<Point>> angles {}; // Angle and vector of points on the same angle
-    
+
+        std::vector<std::pair<double, Point>> slopes {}; // Angle and vector of points on the same angle
+
         for (auto& other_p : points) {
             if (&p == &other_p) continue;
 
-            double slope = std::round(p.slopeTo(other_p) / tolerance) * tolerance;
-            angles[slope].push_back(other_p);
-                
+            double slope = p.slopeTo(other_p);
+            slopes.push_back({slope, other_p});
         }
-    
-        for (auto& [angle, group] : angles) {
-            if (group.size() >= 3) {
-                group.push_back(p);
-                window->draw_line(group);
+
+        std::sort(slopes.begin(), slopes.end(),
+            [](auto& a, auto& b) {
+                return a.first < b.first;
+            });
+
+        int i = 0;
+        while (i < (int)slopes.size()) {
+            int j = i + 1;
+            while (j < (int)slopes.size() &&
+                   sameSlope(slopes[i].first, slopes[j].first, tolerance)) {
+                ++j;
             }
+
+            int blockSize = j - i;  // hur många punkter har samma lutning
+
+            if (blockSize >= 3) {
+                vector<Point> linePoints;
+                linePoints.push_back(p);
+                for (int k = i; k < j; ++k) {
+                    linePoints.push_back(slopes[k].second);
+                }
+
+                window->draw_line(linePoints);
+            }
+            i = j;
         }
     }
 
