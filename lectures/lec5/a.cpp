@@ -17,7 +17,7 @@ int main() {
             words.push_back(word);
         }
 
-        sort(words.begin(), words.end());
+    sort(words.begin(), words.end());
 
     for (auto& word : words) {
         for (size_t i = 0; i < word.size(); i++) {
