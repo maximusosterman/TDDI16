@@ -1,6 +1,6 @@
 # --- Compiler and flags ---
 CXX      := g++
-CXXFLAGS := -std=c++17 -Wall -Wextra -pedantic -Weffc++ -Wold-style-cast -Woverloaded-virtual -g
+CXXFLAGS := -std=c++17 -Wall -Wextra -pedantic -Weffc++ -Wold-style-cast -Woverloaded-virtual -g -O3
 
 # --- Project setup ---
 TARGET   := main

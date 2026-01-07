@@ -105,7 +105,7 @@ vector<string> find_longest(const Dictionary &dict, const string &word) {
     std::queue<string> q {};
     std::unordered_map<string, string> parent {};
     std::unordered_map<string, int> distance {};
-    std::unordered_set<string> visited;
+    std::unordered_set<string> visited {};
 
     if (!dict.count(word))
         return path;
