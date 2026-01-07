@@ -17,7 +17,9 @@ tidskomplexiteten för brute är O(N⁴) i värstafall eftersom då måste vi it
 
 fast:
 
-tidskomplexiteten för fast är O(N²) eftersom vi i värstafall måste iterera igenom alla punkter. Här jämför vi bara 2 punkter med varandra åt taget och lägger in resultatet i en hashtabell. Lösningen har inget medelfall.
+tidskomplexiteten för fast är O(N²*log(n)) eftersom vi först beräknar lutningen för alla punkter i förhållande till origo -> O(N). Detta upprepar vi n antal gånger -> O(N) * O(N) = O(N²)
+Sorteringen av listan efter lutningen -> O(log(N)) 
+Totalt: O(N²) * O(log(N)) = O(N²log(N))
 
 - Fyll i tabellen nedan med riktiga körtider i sekunder när det känns
   vettigt att vänta på hela beräkningen.
@@ -34,7 +36,7 @@ tidskomplexiteten för fast är O(N²) eftersom vi i värstafall måste iterera 
    1600      46957ms       379ms
    3200     ~13min         1341ms
    6400     ~50min         5347ms
-  12800     ~6.67tim          22796ms 
+  12800     ~6.67tim       22796ms 
 
 
 - Energianvändning
